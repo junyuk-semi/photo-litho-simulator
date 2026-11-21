@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import importlib
+import os
 import sys
 from pathlib import Path
 
@@ -10,6 +12,11 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+import app.glossary as _glossary_mod
+
+if getattr(_glossary_mod, "_LOADED_MTIME", 0.0) != os.path.getmtime(_glossary_mod.__file__):
+    importlib.reload(_glossary_mod)
 
 from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
 from src.physics.constants import EXPOSURE_NODES, PARAMETER_SPECS
@@ -41,7 +48,7 @@ st.success(
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("지원 노광 세대", "DUV 3종 + EUV 비교", help=tip("wavelength"))
 col2.metric("관리 공정 변수", f"{len(PARAMETER_SPECS)}개 (Tier 1 & 2)", help="핵심 광학·노광 변수(Tier 1)와 코팅·베이크·현상 변수(Tier 2) 전체를 체계적으로 관리합니다.")
-col3.metric("핵심 출력 KPI", "7대 공정 지표 + ACI 수율", help="CD, CDU(3σ), Resolution, I(z), Reflectance, Defect Risk, Process Window 및 Etch ACI 수율입니다.")
+col3.metric("핵심 출력 KPI", "7대 지표 + ACI 수율", help="CD, CDU(3σ), Resolution, I(z), Reflectance, Defect Risk, Process Window 및 Etch ACI 수율입니다.")
 col4.metric("실전 워크플로우", "1차 → 2차 → 3차 수율 개선", help=tip("r2r_apc"))
 
 with st.expander("🎨 사진 인화로 1분 이해하는 포토공정 (비유 & 전체 지도)", icon=":material/lightbulb:", expanded=True):

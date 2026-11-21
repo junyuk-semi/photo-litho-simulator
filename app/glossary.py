@@ -9,10 +9,13 @@ Provides:
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Sequence
 
 import streamlit as st
+
+_LOADED_MTIME: float = os.path.getmtime(__file__)
 
 
 @dataclass(frozen=True)
@@ -525,7 +528,8 @@ CATEGORIES: List[str] = [
 
 def tip(key: str) -> str:
     """Return concise hover tooltip text for a glossary term key."""
-    return GLOSSARY_MAP[key].short_tip
+    entry = GLOSSARY_MAP.get(key)
+    return entry.short_tip if entry is not None else ""
 
 
 def render_term_card(entry: GlossaryTerm) -> None:

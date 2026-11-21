@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import importlib
+import os
 import sys
 from pathlib import Path
 
@@ -10,6 +12,11 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+import app.glossary as _glossary_mod
+
+if getattr(_glossary_mod, "_LOADED_MTIME", 0.0) != os.path.getmtime(_glossary_mod.__file__):
+    importlib.reload(_glossary_mod)
 
 from app.glossary import CATEGORIES, GLOSSARY_LIST, render_term_card
 
