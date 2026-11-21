@@ -1,0 +1,18 @@
+# Python caches & virtualenvs (keep venv outside Obsidian vault)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Local Windows-only launchers (contain local machine paths)
+launch_simulator.bat
+launch_simulator.ps1
+
+# Generated synthetic datasets & temporary plots
+data/generated/
+*.csv
+*.parquet
+*.png
