@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
+from app.glossary import render_analogy_cards, render_glossary_toolbar, render_page_concept_guide, tip
 from src.physics.constants import EXPOSURE_NODES, ILLUMINATION_PRESETS, PATTERN_PRESETS
 from src.physics.resolution import (
     analyze_node,
@@ -26,6 +26,7 @@ from src.visualization.resolution_plots import (
     plot_resolution_dof_tradeoff,
     plot_resolution_vs_na,
 )
+from src.visualization.study_visuals import plot_rayleigh_aperture_intuition
 
 st.set_page_config(page_title="Resolution & DOF", page_icon="📐", layout="wide")
 
@@ -79,6 +80,26 @@ c2.metric("최소 해상도 CD_min", f"{res.min_cd_nm:.2f} nm", help=tip("CD"))
 c3.metric("High-NA DOF", f"{res.dof_high_na_nm:.1f} nm", delta=f"Paraxial 대비 {res.dof_high_na_nm - res.dof_paraxial_nm:+.1f} nm", help=tip("DOF"))
 c4.metric("최소 Pitch", f"{res.min_pitch_nm:.1f} nm", help=tip("pattern"))
 c5.metric("해상 가능 여부", "가능 (PASS)" if res.is_resolvable else "한계 초과 (FAIL)", delta=f"Margin {res.resolution_margin_nm:+.1f} nm", help="목표 CD가 이론적 최소 해상도 CD_min 이상이면 단일 노광으로 해상 가능합니다.")
+
+with st.expander("🎨 그림과 비유로 10초 이해하기 (붓 굵기 · 조리개 · 사입사 가로등)", icon=":material/palette:", expanded=True):
+    render_analogy_cards(
+        [
+            ("🖌️ 파장(λ) = 붓 굵기", "굵은 유성 매직(248nm)보다 0.1mm 샤프(193nm/EUV)가 훨씬 작은 글씨를 번짐 없이 그릴 수 있어.", "Rayleigh 식: CD_min ∝ λ"),
+            ("📷 NA = 카메라 조리개", "렌즈가 넓게 빛을 모을수록(NA↑) 디테일은 살지만, 아웃포커싱처럼 초점이 맞는 범위(DOF)가 제곱으로 얇아져.", "DOF ∝ λ / NA² (핵심 트레이드오프)"),
+            ("🔦 OAI = 비스듬한 가로등", "빛을 수직 대신 비스듬히 쏘면 좁은 틈의 회절광이 렌즈 안으로 살아 들어오고, 물(Immersion)은 빛을 더 크게 꺾어줘.", "유효 k1↓, Dense DOF↑"),
+        ]
+    )
+    fig_int1 = plot_rayleigh_aperture_intuition(
+        wavelength_nm=res.wavelength_nm,
+        na=res.na,
+        n_fluid=res.n_fluid,
+        illumination=illumination,
+        min_cd_nm=res.min_cd_nm,
+        target_cd_nm=target_cd,
+        dof_nm=res.dof_high_na_nm,
+    )
+    st.pyplot(fig_int1, alt="현재 NA, 매질 굴절률, 파장에 따른 렌즈 집광 각도와 DOF 초점 폭 도해")
+    plt.close(fig_int1)
 
 tab1, tab2, tab3, tab4 = st.tabs(["파장·NA별 해상도", "CD vs DOF 트레이드오프", "4대 노드 비교", "노광 에너지 계산기"])
 

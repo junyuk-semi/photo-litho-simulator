@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
+from app.glossary import render_analogy_cards, render_glossary_toolbar, render_page_concept_guide, tip
 from src.physics.constants import EXPOSURE_NODES, get_optical_constants
 from src.physics.optics_tmm import (
     build_litho_stack,
@@ -25,6 +25,7 @@ from src.visualization.optics_fem_plots import (
     plot_standing_wave_comparison,
     plot_swing_curve_and_barc_opt,
 )
+from src.visualization.study_visuals import plot_multilayer_stack_intuition
 
 st.set_page_config(page_title="Optics & BARC (TMM)", page_icon="🌈", layout="wide")
 
@@ -93,6 +94,18 @@ st.caption(
     f"이론 정상파 주기 λ/(2n_PR) = {res_on.standing_wave_period_nm:.2f} nm | "
     f"에너지 보존 검증 R+T+A = {res_on.reflectance + res_on.transmittance + res_on.absorptance:.6f}"
 )
+
+with st.expander("🎨 그림과 비유로 이해하기 (거울 반사 · 줄넘기 정상파 · 안경 무반사 코팅 BARC)", icon=":material/palette:", expanded=True):
+    render_analogy_cards(
+        [
+            ("🪞 하부막 = 바닥 거울", "무광 종이(SiO₂)와 은박지(Al 금속)는 반사율이 달라. 바닥이 번쩍이면 빛이 되튀어 올라와.", "R_sub: PR 바닥에서 되돌아오는 반사율"),
+            ("〰️ 정상파 = 줄넘기 파도", "위에서 내려오는 빛과 바닥 반사광이 겹쳐 PR 안에 밝고 어두운 줄무늬가 생겨 측벽이 계단처럼 깎여.", "주기 = λ/(2·n_PR), SWR = I_max/I_min"),
+            ("🕶️ BARC = 무반사 코팅 + 스펀지", "두께(λ/4n)로 반사파 위상을 180° 어긋나게 지우고, 흡수(k)로 남은 빛을 먹어 바닥 반사를 2% 밑으로 눌러줘.", "최적 BARC → Swing 평탄화"),
+        ]
+    )
+    fig_int2 = plot_multilayer_stack_intuition(stack_barc, res_off, res_on, barc_thick)
+    st.pyplot(fig_int2, alt="다층 박막 단면 빛 반사 경로와 BARC 유무에 따른 PR 측벽 정상파 비교 도해")
+    plt.close(fig_int2)
 
 fig_sw = plot_standing_wave_comparison(res_off, res_on, underlayer, barc_thick)
 st.pyplot(fig_sw)

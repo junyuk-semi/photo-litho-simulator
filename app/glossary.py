@@ -466,6 +466,47 @@ GLOSSARY_LIST: List[GlossaryTerm] = [
         "따라서 **머신러닝은 물리적 인과관계를 증명하거나 대체하는 도구가 아니라**, 물리 모델 위에서 고속 근사·산포 진단·최적화를 돕는 보조 엔진으로 써야 해.",
         "5페이지(ML의 물리적 한계 탭)",
     ),
+    # --- 7. 실전 Fab · 전/후 공정 연계 & Run-to-Run ---
+    GlossaryTerm(
+        "thin_film",
+        "Thin Film (박막 증착 공정) & 하부막 영향",
+        "실전 Fab·연계 공정",
+        "포토 공정 전 웨이퍼 위에 산화막(SiO₂), 폴리실리콘, 금속(Al/Cu) 등을 얇게 쌓는 전 공정. 하부막 두께와 (n, k)가 포토 반사율을 결정함.",
+        "그림을 그리기 전에 도화지(산화막/금속판)를 먼저 까는 단계야. 도화지 재질과 두께가 달라지면 빛 반사량도 달라져.",
+        "하부 박막 두께 $d_{UL}$ 이 조금만 변해도 다층 박막 간섭 위상이 바뀌어 $R_{sub}$와 $\\eta_{abs}$가 변해. 특히 Al 같은 금속 하부막은 반사율이 매우 높아 BARC 설계가 필수야.",
+        "앞단 Thin Film 증착 두께 산포가 크면 포토 노광량 여유(EL%)를 잡아먹으므로, 하부막에 맞는 BARC로 광학 민감도를 낮춰야 해.",
+        "7페이지(Step 1 전 공정 설정)",
+    ),
+    GlossaryTerm(
+        "cmp",
+        "CMP (화학기계적 연마) & 디싱(Dishing) Defocus",
+        "실전 Fab·연계 공정",
+        "포토 직전 웨이퍼 표면의 울퉁불퉁한 단차를 평평하게 갈아내는 전 공정. 평탄화가 덜 되면 노광 시 초점 이탈(Defocus)을 유발함.",
+        "도장을 찍기 전에 책상 위를 대패로 평평하게 미는 작업이야. 바닥이 움푹 패여(Dishing) 있으면 도장이 흐릿하게 찍혀(Defocus).",
+        "High-NA(예: ArFi 1.35)로 갈수록 DOF가 100nm 안팎으로 매우 좁아져서, 앞단 CMP에서 생긴 수십 nm 단차(Dishing/Erosion)가 그대로 노광 Focus 오차와 웨이퍼 산포($\\sigma_{focus}$)로 직결돼.",
+        "CMP 균일도를 개선하거나, 앞단 계측값을 받아 스캐너 Focus Offset으로 Feed-Forward 보정(APC)해야 수율을 지킬 수 있어.",
+        "7페이지(Step 1 전 공정 CMP 설정)",
+    ),
+    GlossaryTerm(
+        "etch_aci",
+        "ADI vs ACI & Etch Bias (식각 바이어스)",
+        "실전 Fab·연계 공정",
+        "ADI는 포토 현상 직후 CD, ACI는 식각(Etch) 및 세정 후 최종 회로 CD. 식각 중 선폭이 변하는 양(Etch Bias)을 감안해 포토 목표를 잡아야 함.",
+        "ADI는 연필 밑그림 두께, ACI는 칼로 파낸 최종 도장 두께야. 칼질할 때 옆이 2nm 더 깎인다면(Etch Bias = -2nm), 밑그림은 미리 2nm 두껍게 그려야 해.",
+        "$CD_{ACI} = CD_{ADI} + \\text{Etch Bias}$. 따라서 목표 회로 선폭을 맞추기 위한 포토 목표 선폭은 $CD_{ADI,target} = CD_{ACI,target} - \\text{Etch Bias}$ 야. 또한 식각을 버틸 만큼의 최소 PR 두께($d_{PR} \\ge d_{min,etch}$)도 유지해야 해.",
+        "PR을 너무 두껍게 잡으면 Etch는 잘 버티지만 종횡비(AR)가 커져 포토에서 쓰러지고(Collapse), 너무 얇으면 Etch 중 패턴이 다 날아가 버려.",
+        "7페이지(Step 4 후공정 Etch 연계)",
+    ),
+    GlossaryTerm(
+        "r2r_apc",
+        "Run-to-Run (R2R) / APC 반복 수율 개선",
+        "실전 Fab·연계 공정",
+        "1차 계측 결과와 데이터 분석을 바탕으로 다음 차수(2차·3차) 레시피(BARC, Dose, Focus, PEB)를 보정해 수율을 끌어올리는 폐루프 공정 제어.",
+        "영점 사격 1발 쏘고 표적지 탄착점을 보고(데이터 분석) 조준경을 몇 클릭 돌려서(조치사항) 다음 발을 정중앙에 꽂는 과정이야.",
+        "계측된 평균 CD 오차는 Dose/Focus APC 피드백으로 중심을 맞추고, 웨이퍼 공간 산포($3\\sigma$)는 BARC(Swing 억제)·스핀 코팅·PEB 핫플레이트 균일도 개선으로 줄여 수율을 98%+로 수렴시켜.",
+        "한 번에 모든 원인을 고치기보다 1) 치명적 광학·결함 제거 → 2) 정밀 타겟/산포 튜닝 순서로 원인을 분해해 검증하는 것이 실무 표준이야.",
+        "7페이지(실전 Fab 사이클 & 보고서)",
+    ),
 ]
 
 GLOSSARY_MAP: Dict[str, GlossaryTerm] = {item.key: item for item in GLOSSARY_LIST}
@@ -478,6 +519,7 @@ CATEGORIES: List[str] = [
     "코팅·베이크·현상",
     "데이터·DOE·통계",
     "머신러닝·최적화",
+    "실전 Fab·연계 공정",
 ]
 
 
@@ -548,6 +590,17 @@ def render_glossary_toolbar(page_id: str, page_term_keys: Sequence[str]) -> None
             help="현재 화면을 유지한 채 오른쪽에서 검색 가능한 포토공정 용어 사전을 엽니다.",
         ):
             open_glossary_drawer(page_term_keys)
+
+
+def render_analogy_cards(cards: Sequence[tuple[str, str, str]]) -> None:
+    """Render concise beginner-friendly everyday analogy cards in a clean grid."""
+    cols = st.columns(min(len(cards), 3))
+    for idx, (title, analogy, physics_link) in enumerate(cards):
+        with cols[idx % len(cols)]:
+            with st.container(border=True, height="stretch"):
+                st.markdown(f"**{title}**")
+                st.markdown(analogy)
+                st.caption(physics_link)
 
 
 def render_page_concept_guide(

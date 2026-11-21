@@ -12,11 +12,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
+from app.glossary import render_analogy_cards, render_glossary_toolbar, render_page_concept_guide, tip
 from src.physics.constants import EXPOSURE_NODES, ILLUMINATION_PRESETS, PATTERN_PRESETS
 from src.physics.exposure_fem import simulate_fem
 from src.physics.process_models import tier2_process_shift
 from src.visualization.optics_fem_plots import plot_fem_heatmap_and_bossung
+from src.visualization.study_visuals import plot_pr_profile_and_defects_intuition
 
 st.set_page_config(page_title="FEM & Process Window", page_icon="🎯", layout="wide")
 
@@ -90,6 +91,18 @@ m2.metric("PW DOF (최대 내접)", f"{pw.pw_dof_nm:.1f} nm", help=tip("PW"))
 m3.metric("PW Exposure Latitude", f"{pw.pw_el_pct:.2f} %", help=tip("EL"))
 m4.metric("광학 결합 η_abs / R_sub", f"{fem.optics.effective_dose_factor:.3f} / {fem.optics.substrate_reflectance*100:.1f}%", help=tip("eta_abs"))
 m5.metric("종합 결함 위험도", f"{dfct.overall_defect_risk:.1f} / 100", help="4대 결함(Pattern Collapse, Scumming, Bridging/Pinching, Reflective Notching) 중 최대 위험 점수입니다.")
+
+with st.expander("🎨 그림과 비유로 이해하기 (안전 주차구역 PW · Bossung 곡선 · PR 단면 결함)", icon=":material/palette:", expanded=True):
+    render_analogy_cards(
+        [
+            ("🅿️ Process Window = 안전 주차구역", "목표 CD ±10% 차선 안에 들어가는 가장 넓은 직사각형 쿠션이야. 넓을수록 Focus/Dose가 흔들려도 합격해.", "PW Area = DOF(가로) × EL%(세로)"),
+            ("🙂 Bossung = 웃는/찡그린 포물선", "초점이 어긋날 때 선폭이 위로 휘면 Smile, 아래로 휘면 Frown이야. 안 휘는 평평한 점(Iso-focal)을 노려야 해.", "E_eff = Dose × η_abs"),
+            ("🧱 4대 결함 = 도미노·얼룩·합선·파먹힘", "PR이 너무 홀쭉하면 쓰러지고(Collapse), 덜 씻기면 얼룩(Scum), 너무 얇아지면 끊어지고(Pinching), 반사가 크면 옆이 파여(Notching).", "사이드바 BARC=0 / HMDS=None 실험 추천"),
+        ]
+    )
+    fig_int3 = plot_pr_profile_and_defects_intuition(fem)
+    st.pyplot(fig_int3, alt="현재 조건에서의 PR 단면 형상 모식도와 4대 결함 위험 게이지")
+    plt.close(fig_int3)
 
 fig = plot_fem_heatmap_and_bossung(fem)
 st.pyplot(fig)

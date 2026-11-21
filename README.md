@@ -21,7 +21,8 @@
 - [x] **4단계**: Optics-Coupled Focus–Exposure Matrix(FEM), Bossung Plot, 최대 내접 Process Window(DOF @ EL%) 및 4대 결함 위험도 진단
 - [x] **5단계**: Tier 2 공정 모델(코팅/베이크/현상), 300mm 웨이퍼 2D CDU 맵($3\sigma$), LHS 가상 Fab 데이터 생성, 상관·OLS·$2^4$ DOE 분석
 - [x] **6단계**: Physics-Informed 하이브리드 ML(Linear/RF/XGBoost), SHAP 원인 분석, 물리 검증 역최적화 및 **193nm→248nm 외삽 한계 증명**
-- [x] **7단계**: Streamlit 멀티페이지 통합 시뮬레이터 + 학부생 눈높이 44개 용어 사전(우측 슬라이드 검색 드로어 & 전 페이지 `?` 툴팁)
+- [x] **7단계**: Streamlit 멀티페이지 통합 시뮬레이터 + 학부생 눈높이 48개 용어 사전(우측 슬라이드 검색 드로어 & 전 페이지 `?` 툴팁) + 공부용 비유/개념 도해(Pages 1~6)
+- [x] **8단계 (실전 Fab 사이클 모드)**: 전 공정(`Thin Film`·`CMP` 단차) → 포토 8단계 → `ADI` 계측·원인 분해 보고서·CAPA 조치사항 → `1차→2차→3차` 반복 수율 개선(`Run-to-Run`) → 후 공정(`Etch Bias`·`ACI` 수율) 연계 (`7페이지`)
 
 ## 프로젝트 구조
 ```text
@@ -36,14 +37,15 @@ photo-litho-simulator/
 │   ├── physics/                # constants, resolution, optics_tmm, exposure_fem, process_models
 │   ├── data/                   # LHS synthetic Fab generator, correlation/OLS/2^4 DOE
 │   ├── ml/                     # LR/RF/XGBoost + SHAP + extrapolation proof + PW optimizer
-│   └── visualization/          # Matplotlib builders
+│   ├── fab_cycle.py            # Sequential Fab flow, Run-to-Run yield cycle & CAPA report generator
+│   └── visualization/          # Matplotlib builders (including study_visuals & fab_cycle_plots)
 ├── app/
 │   ├── Home.py                 # Streamlit Cloud Entrypoint
-│   ├── glossary.py             # 44-term interactive glossary drawer & tooltips
-│   └── pages/                  # Pages 1~6
+│   ├── glossary.py             # 48-term interactive glossary drawer, analogies & tooltips
+│   └── pages/                  # Pages 1~6 (Study Mode) + Page 7 (Fab Cycle & Yield Loop)
 ├── scripts/
 │   └── stage2_resolution_report.py
-└── tests/                      # 31 automated unit & Streamlit AppTest checks
+└── tests/                      # 35 automated unit & Streamlit AppTest checks
 ```
 
 ## 로컬 실행 방법

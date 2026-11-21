@@ -43,6 +43,25 @@ class TestStage7StreamlitApp(unittest.TestCase):
     def test_page6_glossary(self) -> None:
         self._assert_page_runs_cleanly("pages/6_Glossary_and_Physics_Guide.py")
 
+    def test_page7_fab_cycle_and_progression(self) -> None:
+        page_path = APP_DIR / "pages/7_Fab_Cycle_and_Yield_Report.py"
+        self.assertTrue(page_path.exists())
+        at = AppTest.from_file(str(page_path), default_timeout=45.0)
+        at.run()
+        self.assertEqual(len(at.exception), 0, f"Initial load exception: {[e.message for e in at.exception]}")
+
+        # Click '단계별 조치 반영 + 2차 실행' and then 3차 실행
+        step_btn = next(b for b in at.button if "단계별 조치 반영" in b.label)
+        step_btn.click().run()
+        self.assertEqual(len(at.exception), 0, f"Cycle 2 exception: {[e.message for e in at.exception]}")
+
+        step_btn2 = next(b for b in at.button if "단계별 조치 반영" in b.label)
+        step_btn2.click().run()
+        self.assertEqual(len(at.exception), 0, f"Cycle 3 exception: {[e.message for e in at.exception]}")
+
+        # Cumulative table should now have 3 cycles
+        self.assertEqual(len(at.dataframe[0].value), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

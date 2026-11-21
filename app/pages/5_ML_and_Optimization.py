@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
+from app.glossary import render_analogy_cards, render_glossary_toolbar, render_page_concept_guide, tip
 from src.data.generator import generate_synthetic_fab_dataset
 from src.ml.models import run_extrapolation_experiment, train_and_evaluate_cd_models
 from src.ml.optimizer import optimize_process_conditions
@@ -69,6 +69,25 @@ def _extrap_cached():
 
 
 bench = _train_cached(node_key, n_samples)
+
+with st.expander("🎨 그림과 비유로 이해하기 (오답노트 AI · 팀플 정산 SHAP · 외삽 한계)", icon=":material/palette:", expanded=False):
+    render_analogy_cards(
+        [
+            ("🌳 Linear vs RF vs XGBoost", "Linear는 직선 자로 긋기, RF는 여러 나무의 다수결, XGBoost는 앞 나무가 틀린 오차를 집중 보완하는 '오답노트 앙상블'이야.", "비선형 박막 간섭에서 XGBoost가 우수"),
+            ("🧾 SHAP = 팀플 기여도 정산표", "최종 CD가 목표에서 왜 ±몇 nm 벗어났는지, 각 공정 변수의 책임량을 공평하게(Shapley Value) 분해해 줘.", "가장 긴 막대가 1순위 개선 타겟"),
+            ("🚧 외삽 실패 = 문제집 암기 학생", "193nm 데이터만 외운 AI에게 처음 보는 248nm를 물으면 엉뚱한 답을 찍어. AI는 물리 검증과 함께 써야 안전해.", "Tab 4에서 물리 vs XGBoost 비교"),
+        ]
+    )
+    st.mermaid_chart(
+        """
+        flowchart LR
+            A["1,200개 후보 레시피"] --> B["XGBoost Surrogate<br/>(0.05초 고속 스크리닝)"]
+            B --> C["상위 8개 유망 후보"]
+            C --> D["물리 엔진 검증 (TMM + FEM)<br/>PW Area 최대 & 결함 최소 선정"]
+            D --> E["최종 안전 레시피 확정"]
+        """,
+        alt="ML 대리모델 고속 스크리닝과 물리 엔진 최종 검증 하이브리드 최적화 흐름도",
+    )
 
 tab1, tab2, tab3, tab4 = st.tabs([
     "모델 성능 & SHAP 원인 분석",

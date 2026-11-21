@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.glossary import render_glossary_toolbar, render_page_concept_guide, tip
+from app.glossary import render_analogy_cards, render_glossary_toolbar, render_page_concept_guide, tip
 from src.data.analysis import (
     compute_correlation_matrix,
     run_2level_factorial_doe,
@@ -26,6 +26,7 @@ from src.visualization.data_ml_plots import (
     plot_doe_effects,
     plot_wafer_cdu_map,
 )
+from src.visualization.study_visuals import plot_cdu_radial_decomposition
 
 st.set_page_config(page_title="Wafer CDU & Data Analysis", page_icon="📊", layout="wide")
 
@@ -85,8 +86,20 @@ with tab1:
     k4.metric("웨이퍼 수율 (±10% Spec)", f"{cdu.within_spec_yield_pct:.1f} %", help="전체 웨이퍼 측정 사이트 중 목표 CD ±10% 스펙 안에 들어온 비율입니다.")
 
     fig_cdu = plot_wafer_cdu_map(cdu)
-    st.pyplot(fig_cdu)
+    st.pyplot(fig_cdu, alt="300mm 웨이퍼 2D CD 균일도 히트맵과 분포 히스토그램")
     plt.close(fig_cdu)
+
+    with st.expander("🎨 그림과 비유로 이해하기 (피자 토핑 균일도 · 왜 테두리 수율이 떨어질까?)", icon=":material/palette:", expanded=True):
+        render_analogy_cards(
+            [
+                ("🍕 300mm 웨이퍼 CDU = 피자 토핑 균일도", "피자 한 판에서 가운데 조각과 테두리 조각의 크기가 똑같아야 품질이 좋아. 3σ가 작을수록 전체 칩이 고르게 찍힌 거야.", "3σ ≤ 목표 CD의 3%가 양산 목표"),
+                ("🌀 스핀 코팅 & 핫플레이트 구배", "웨이퍼를 돌리며 바르면 가장자리 PR 두께가 달라지고, 가열판(PEB)도 테두리 열손실로 온도가 달라져.", "중심(r=0) vs 테두리(r=145mm) 단면 확인"),
+                ("🧪 2⁴ DOE = 16번 실험으로 공범 찾기", "변수를 하나씩 바꾸면 'Dose와 Focus가 합쳐질 때의 효과(교호작용)'를 놓쳐. 2수준 DOE가 핵심 인자를 추려줘.", "파란 막대=단일효과, 주황=교호작용"),
+            ]
+        )
+        fig_rad = plot_cdu_radial_decomposition(cdu)
+        st.pyplot(fig_rad, alt="웨이퍼 중심에서 가장자리까지의 반경별 PR 두께, PEB 온도, CD 변화 단면도")
+        plt.close(fig_rad)
 
 df = _cached_dataset(node_key, n_samples)
 

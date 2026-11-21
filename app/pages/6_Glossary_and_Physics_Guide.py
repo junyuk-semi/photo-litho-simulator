@@ -15,7 +15,22 @@ from app.glossary import CATEGORIES, GLOSSARY_LIST, render_term_card
 
 st.set_page_config(page_title="용어 사전 & 물리 가이드", page_icon="📖", layout="wide")
 st.title("📖 포토공정 · 물리 · AI 용어 백과사전")
-st.caption("전자공학 학부생 눈높이로 정리한 시뮬레이터 전체 44개 핵심 용어 (직관 + 수식 원리 + 공정 트레이드오프)")
+st.caption(f"전자공학 학부생 눈높이로 정리한 시뮬레이터 전체 {len(GLOSSARY_LIST)}개 핵심 용어 (직관 + 수식 원리 + 공정 트레이드오프)")
+
+with st.expander("🗺️ 한눈에 보는 포토공정 인과관계 지도 & 입문자 추천 공부 순서", icon=":material/map:", expanded=True):
+    st.mermaid_chart(
+        """
+        flowchart LR
+            TF["전 공정: Thin Film & CMP<br/>(하부막 n,k · 단차 Defocus)"] --> OPT["광학·박막: λ, NA, BARC<br/>(CD_min, R_sub, η_abs)"]
+            OPT --> EXP["노광·FEM: Dose, Focus<br/>(Bossung, Process Window)"]
+            COAT["Track: HMDS, 스핀코팅, PEB, TMAH<br/>(PR두께, Arrhenius L_diff, Mack)"] --> EXP
+            EXP --> ADI["ADI 계측 & 데이터 분석<br/>(300mm CDU 3σ, OLS, DOE, SHAP)"]
+            ADI --> R2R["실전 Run-to-Run 조치<br/>(1차 → 2차 → 3차 수율 개선)"]
+            R2R -. "보정 피드백" .-> COAT
+            ADI --> ETCH["후 공정: Etch & 최종 ACI 수율"]
+        """,
+        alt="전 공정부터 포토, 계측, 반복 수율 개선, 후속 식각까지의 인과관계 지도",
+    )
 
 col_search, col_cat = st.columns([2.2, 1.0], vertical_alignment="bottom")
 with col_search:
