@@ -11,6 +11,7 @@
 - 물리 기반 가상 Fab 데이터에 데이터 분석(DOE·회귀)과 하이브리드 머신러닝(CD 예측·SHAP 산포 원인 분석·Process Window 역최적화·외삽 한계 증명)을 결합해 공정기술 엔지니어 관점의 의사결정 도구를 구축
 
 ## 핵심 문서
+- 개념 학습 가이드 (비유·물리·코드 매핑): [docs/00_study_guide.md](docs/00_study_guide.md)
 - 1단계 물리 설계 명세서: [docs/01_physics_spec.md](docs/01_physics_spec.md)
 - 실제 공정 vs 시뮬레이션 한계: [docs/02_limitations.md](docs/02_limitations.md)
 
